@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
-use Exception;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -68,13 +66,32 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->sku = $product->sku;
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
+        try {
+            DB::transaction(function () use ($request, $product) {
+                if (!$product) {
+                    throw new \Exception("Producto no encontrado.");
+                }
 
-        $product->save();
+                if (!is_numeric($request->price) || $request->price < 0) {
+                    throw new \Exception("El precio debe ser un numero valido y positivo.");
+                }
+
+                if (!is_numeric($request->stock) || $request->stock < 0) {
+                    throw new \Exception("El stock debe ser un numero entero positivo.");
+                }
+
+                $product->sku = $request->sku;
+                $product->name = $request->name;
+                $product->description = $request->description;
+                $product->price = $request->price;
+                $product->stock = $request->stock;
+
+                $product->save();
+            });
+        } catch (\Exception $e) {
+            Log::error("Error al actualizar producto: " . $e->getMessage());
+            return response()->json(["message" => "error: " . $e->getMessage()], 500);
+        }
 
         return response()->json(["message" => "El producto ha sido actualizado exitosamente."]);
     }

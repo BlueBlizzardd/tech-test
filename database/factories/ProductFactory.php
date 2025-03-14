@@ -21,7 +21,9 @@ class ProductFactory extends Factory
             'name' => fake()->word(),
             'description' => fake()->paragraph(),
             'price' => fake()->randomFloat(2),
-            'stock' => fake()->randomNumber(3)
+            'stock' => fake()->randomNumber(3),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
     }
 }

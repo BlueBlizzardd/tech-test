@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
@@ -20,7 +21,7 @@ export default function Dashboard({ products }: DashboardProps) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                <div className="grid auto-rows-min gap-4">
                     <Table>
                         <TableCaption>Lista de Productos.</TableCaption>
                         <TableHeader>
@@ -33,6 +34,7 @@ export default function Dashboard({ products }: DashboardProps) {
                                 <TableHead>Cantidad</TableHead>
                                 <TableHead>Creado En</TableHead>
                                 <TableHead>Actualizado En</TableHead>
+                                <TableHead>Opciones</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -41,21 +43,22 @@ export default function Dashboard({ products }: DashboardProps) {
                                     <TableCell>{product.id}</TableCell>
                                     <TableCell>{product.sku}</TableCell>
                                     <TableCell>{product.name}</TableCell>
-                                    <TableCell>{product.description}</TableCell>
+                                    <TableCell className='overflow-ellipsis overflow-x-hidden'>{product.description}</TableCell>
                                     <TableCell>{product.price}</TableCell>
                                     <TableCell>{product.stock}</TableCell>
-                                    <TableCell>{product.created_at}</TableCell>
-                                    <TableCell>{product.updated_at}</TableCell>
+                                    <TableCell>{product.created_at.slice(0, 10)}</TableCell>
+                                    <TableCell>{product.updated_at.slice(0, 10)}</TableCell>
+                                    <TableCell>
+                                        <div className='flex justify-center gap-2'>
+                                            <Button className='bg-green-400 hover:bg-green-400/90'>Actualizar</Button>
+                                            <Button variant='destructive'>Eliminar</Button>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
                     </Table>
                 </div>
-                {/*
-                    <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border md:min-h-min">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                </div>
-                */}
             </div>
         </AppLayout>
     );

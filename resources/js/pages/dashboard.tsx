@@ -3,7 +3,7 @@ import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { Product, type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 type DashboardProps = {
     products: Product[];
@@ -50,8 +50,12 @@ export default function Dashboard({ products }: DashboardProps) {
                                     <TableCell>{product.updated_at.slice(0, 10)}</TableCell>
                                     <TableCell>
                                         <div className='flex justify-center gap-2'>
-                                            <Button className='bg-green-400 hover:bg-green-400/90'>Actualizar</Button>
-                                            <Button variant='destructive'>Eliminar</Button>
+                                            <Button asChild className='bg-green-400 hover:bg-green-400/90'>
+                                                <Link href={`/product/${product.id}/edit`}>Actualizar</Link>
+                                            </Button>
+                                            <Button asChild variant='destructive'>
+                                                <Link href={`/product/${product.id}`}>Eliminar</Link>
+                                            </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>

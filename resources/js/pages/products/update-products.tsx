@@ -27,7 +27,7 @@ export default function ProductUpdateForm({ product, status }: ProductProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        patch(route(`/products/${product.id}`), {
+        patch(route(`/product/${product.id}`), {
             onFinish: () => reset(),
         });
     };

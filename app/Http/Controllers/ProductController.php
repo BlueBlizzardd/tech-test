@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,98 +23,103 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request) {}
+    public function create()
+    {
+        return Inertia::render('products/create-products');
+    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request)
+    public function store(Request $request)
     {
-        if (!is_numeric($request->price) || $request->price < 0) {
-            return response()->json(["message" => "El precio debe ser un numero valido y positivo."], 500);
-        }
+        Product::create($request->validate([
+            'sku' => ['required', 'numeric'],
+            'name' => ['required'],
+            'description' => ['nullable'],
+            'price' => ['required', 'numeric', 'decimal:2', 'min:1'],
+            'stock' => ['required', 'numeric', 'integer', 'min:1']
+        ]));
 
-        if (!is_numeric($request->stock) || $request->stock < 0) {
-            return response()->json(["message" => "El stock debe ser un numero entero positivo."], 500);
-        }
-
-        Product::create([
-            'sku' => $request->sku,
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock
-        ]);
-
-        return response()->json(["message" => "El stock debe ser un numero entero positivo."], 500);
+        return to_route('dashboard');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(int $id)
     {
-        return Product::find($product->id);
+        return Product::find($id);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product) {}
+    public function edit(int $id)
+    {
+        $product = Product::findOrFail($id);
+
+        return Inertia::render('products/update-products', [
+            "product" => $product
+        ]);
+    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(Request $request, int $id)
     {
+        // Si esto falla se redirige a un 404, por lo que no hace falta
+        // colocarlo en la transaccion
+        $product = Product::findOrFail($id);
+
+        // Esto redirige al usuario a la pagina normal si falla, por lo que no hay
+        // que validar como parte de la transaccion
+        $request->validate([
+            'sku' => ['required', 'numeric'],
+            'name' => ['required'],
+            'description' => ['nullable'],
+            'price' => ['required', 'numeric', 'decimal:2', 'min:1'],
+            'stock' => ['required', 'numeric', 'integer', 'min:0']
+        ]);
+
         try {
             DB::transaction(function () use ($request, $product) {
-                if (!$product) {
-                    throw new \Exception("Producto no encontrado.");
-                }
-
-                if (!is_numeric($request->price) || $request->price < 0) {
-                    throw new \Exception("El precio debe ser un numero valido y positivo.");
-                }
-
-                if (!is_numeric($request->stock) || $request->stock < 0) {
-                    throw new \Exception("El stock debe ser un numero entero positivo.");
-                }
-
-                $product->sku = $request->sku;
-                $product->name = $request->name;
-                $product->description = $request->description;
-                $product->price = $request->price;
-                $product->stock = $request->stock;
+                $product->update([
+                    'sku' => $request->sku,
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'price' => $request->price,
+                    'stock' => $request->stock,
+                ]);
 
                 $product->save();
             });
         } catch (\Exception $e) {
             Log::error("Error al actualizar producto: " . $e->getMessage());
-            return response()->json(["message" => "error: " . $e->getMessage()], 500);
+            return to_route('edit');
         }
-
-        return response()->json(["message" => "El producto ha sido actualizado exitosamente."]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(int $id)
     {
+        // Si esto falla se redirige a un 404, por lo que no hace falta
+        // colocarlo en la transaccion
+        $product = Product::findOrFail($id);
+
         try {
             DB::transaction(function () use ($product) {
-                if (!$product) {
-                    throw new \Exception("Producto no encontrado.");
-                }
-
                 $product->delete();
             });
         } catch (\Exception $e) {
             Log::error("Error al eliminar producto: " . $e->getMessage());
-            return response()->json(["error" => $e->getMessage()], 500);
+            // TODO: Change this route redirect
+            return to_route('dashboard');
         }
 
-        return response()->json(["message" => "Producto eliminado"]);
+        return to_route('dashboard');
     }
 }

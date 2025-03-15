@@ -10,8 +10,11 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [ProductController::class, 'index'])->name('dashboard');
-    Route::get('/products/{id}', [ProductController::class, 'show'])->name('product');
-    Route::post('/products/{id}', [ProductController::class, 'store'])->name('store-product');
+    Route::get('/product', [ProductController::class, 'create'])->name('create');
+    Route::post('/product', [ProductController::class, 'store'])->name('create-product');
+    Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('edit');
+    Route::patch('/product/{id}', [ProductController::class, 'update'])->name('edit-product');
+    Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('delete-product');
 });
 
 

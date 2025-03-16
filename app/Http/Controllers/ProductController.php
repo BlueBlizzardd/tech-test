@@ -118,7 +118,6 @@ class ProductController extends Controller
             });
         } catch (\Exception $e) {
             Log::error("Error al eliminar producto: " . $e->getMessage());
-            // TODO: Change this route redirect
             return to_route('dashboard');
         }
 

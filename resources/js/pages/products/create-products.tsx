@@ -26,7 +26,7 @@ export default function ProductForm({ status }: ProductProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('/product'), {
+        post(route('create-product'), {
             onFinish: () => reset(),
         });
     };

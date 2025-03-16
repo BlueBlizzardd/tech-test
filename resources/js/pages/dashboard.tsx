@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { Product, type BreadcrumbItem } from '@/types';
@@ -12,7 +11,7 @@ type DashboardProps = {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Products',
         href: '/dashboard',
     },
 ];
@@ -62,9 +61,11 @@ export default function Dashboard({ products }: DashboardProps) {
                                                     <DialogHeader>
                                                         <DialogTitle>Are you absolutely sure?</DialogTitle>
                                                         <DialogDescription>This action cannot be undone. This will permanently delete this product.</DialogDescription>
-                                                        <Button asChild variant='destructive'>
-                                                            <Link href={`/product/${product.id}`} method='delete'>Confirm</Link>
-                                                        </Button>
+                                                        <DialogClose asChild>
+                                                            <Button asChild variant='destructive'>
+                                                                <Link href={`/product/${product.id}`} method='delete'>Confirm</Link>
+                                                            </Button>
+                                                        </DialogClose>
                                                     </DialogHeader>
                                                 </DialogContent>
                                             </Dialog>

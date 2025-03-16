@@ -17,7 +17,7 @@ interface ProductProps {
 }
 
 export default function ProductUpdateForm({ product, status }: ProductProps) {
-    const { data, setData, patch, processing, errors, reset } = useForm<Required<ProductForm>>({
+    const { data, setData, patch, processing, errors } = useForm<Required<ProductForm>>({
         sku: product.sku,
         name: product.name,
         description: product.description,
@@ -27,9 +27,7 @@ export default function ProductUpdateForm({ product, status }: ProductProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        patch(route('edit-product', product.id), {
-            onFinish: () => reset(),
-        });
+        patch(route('edit-product', product.id));
     };
 
     return (

@@ -97,8 +97,10 @@ class ProductController extends Controller
             });
         } catch (\Exception $e) {
             Log::error("Error al actualizar producto: " . $e->getMessage());
-            return to_route('edit');
+            return to_route('edit', ['id' => $id]);
         }
+
+        return to_route('dashboard');
     }
 
     /**
